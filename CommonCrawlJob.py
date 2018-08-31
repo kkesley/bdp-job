@@ -13,6 +13,12 @@ from gzipstream import GzipStreamFile
 
 LOG = logging.getLogger('BDPJob')
 class CommonCrawlJob(MRJob):
+    def configure_options(self):
+        super(CommonCrawlJob, self).configure_options()
+        self.add_passthrough_option('--s3_local_temp_dir',
+                                    help='local temporary directory to buffer content from S3',
+                                    default=None)
+                                    
     def process_record(self, record):
         """
         process each record from Common Crawl file. Must be implemented
