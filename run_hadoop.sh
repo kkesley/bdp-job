@@ -4,6 +4,8 @@ JOB="$1"
 INPUT="$2"
 OUTPUT="$3"
 
+sudo chmod +x $JOB.py
+
 if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Usage: $0 <job> <input> <outputdir>"
     echo "  Run a CommonCrawl mrjob on Hadoop"
