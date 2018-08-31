@@ -1,4 +1,5 @@
 from collections import Counter
+from CommonCrawlJob import CommonCrawlJob
 
 class WordCount(CommonCrawlJob):
     def process_record(self, record):
