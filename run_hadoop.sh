@@ -14,7 +14,7 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "  <output>  output path (must not exist)"
     echo
     echo "Example:"
-    echo "  $0 word_count hdfs://.../wet.paths  hdfs:///.../output/"
+    echo "  $0 word_count input/test-1.warc  hdfs:///.../output/"
     echo
     echo "Note: don't forget to adapt the number of maps/reduces and the memory requirements"
     exit 1
@@ -53,4 +53,4 @@ python $JOB.py \
        --cleanup NONE \
        $S3_LOCAL_TEMP_DIR \
        --output-dir "$OUTPUT" \
-       "$INPUT"
+       "hdfs:///user/hadoop/$INPUT"
