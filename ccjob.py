@@ -59,9 +59,7 @@ class CommonCrawlJob(MRJob):
             return
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
-        LOG.info('CCFILE: %s', ccfile)
         for _i, record in enumerate(ccfile):
-            LOG.info('CCRECORD: %s', record['Content-Length'])
             for key, value in self.process_record(record):
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
