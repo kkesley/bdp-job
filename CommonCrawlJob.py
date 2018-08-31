@@ -11,7 +11,7 @@ from mrjob.util import log_to_stream
 
 from gzipstream import GzipStreamFile
 
-
+LOG = logging.getLogger('BDPJob')
 class CommonCrawlJob(MRJob):
     def process_record(self, record):
         """
