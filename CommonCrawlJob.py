@@ -10,8 +10,8 @@ from mrjob.job import MRJob
 from mrjob.util import log_to_stream
 
 from gzipstream import GzipStreamFile
-
-LOG = logging.getLogger('BDPJob')
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
 class CommonCrawlJob(MRJob):
     def configure_options(self):
         super(CommonCrawlJob, self).configure_options()
