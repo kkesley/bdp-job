@@ -62,6 +62,7 @@ class CommonCrawlJob(MRJob):
 
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
+                LOG.info('KEY: %s', key)
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
 
