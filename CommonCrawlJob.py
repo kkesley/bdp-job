@@ -1,3 +1,7 @@
+import gzip
+import logging
+
+from tempfile import TemporaryFile
 import boto3
 import botocore
 import warc
