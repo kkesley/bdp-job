@@ -3,9 +3,6 @@ from ccjob import CommonCrawlJob
 
 class WordCount(CommonCrawlJob):
     def process_record(self, record):
-        if record['Content-Type'] != 'text/plain':
-            return
-
         data = record.payload.read()
         for word, count in Counter(data.split()).iteritems():
             yield word, 1
