@@ -60,7 +60,7 @@ class CommonCrawlJob(MRJob):
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
         LOG.info('CCFILE: %s', ccfile)
-        for _i, record in ccfile:
+        for _i, record in enumerate(ccfile):
             LOG.info('CCRECORD: %s', record)
             for key, value in self.process_record(record):
                 yield key, value
