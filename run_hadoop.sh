@@ -39,7 +39,7 @@ else
 fi
 
 python $JOB.py \
-        --conf-path mrjob.conf
+        --conf-path mrjob.conf \
         -r hadoop \
         --jobconf "mapreduce.map.memory.mb=1200" \
         --jobconf "mapreduce.map.java.opts=-Xmx1024m" \
