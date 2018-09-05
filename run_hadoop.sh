@@ -4,8 +4,6 @@ JOB="$1"
 INPUT="$2"
 OUTPUT="$3"
 
-sudo chmod +x $JOB.py
-
 if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Usage: $0 <job> <input> <outputdir>"
     echo "  Run a CommonCrawl mrjob on Hadoop"
@@ -52,7 +50,6 @@ python $JOB.py \
         --jobconf "mapreduce.job.reduces=$NUM_REDUCES" \
         --jobconf "mapreduce.job.maps=$NUM_MAPS" \
         --setup 'export PYTHONPATH=$PYTHONPATH:'${JOB}'_ccmr.tar.gz#/' \
-        --no-output \
         --cleanup NONE \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
