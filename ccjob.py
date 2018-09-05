@@ -1,5 +1,10 @@
 import gzip
 import logging
+import boto3
+import botocore
+import warc
+from gzipstream import GzipStreamFile
+from tempfile import TemporaryFile
 from mrjob.job import MRJob
 from mrjob.util import log_to_stream
 logging.basicConfig(level=logging.INFO)
@@ -18,11 +23,6 @@ class CommonCrawlJob(MRJob):
         raise NotImplementedError('process_record needs to be overriden')
 
     def mapper(self, _, line):
-        import boto3
-        import botocore
-        import warc
-        from gzipstream import GzipStreamFile
-        from tempfile import TemporaryFile
         """
         The Map of MapReduce, pulls the CommonCrawl files from S3
         """
