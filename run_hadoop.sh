@@ -54,3 +54,7 @@ python $JOB.py \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
         "hdfs:///user/hadoop/$INPUT"
+
+mkdir $OUTPUT
+hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
+bzip2 -d *.bz2
