@@ -41,18 +41,19 @@ else
 fi
 
 python $JOB.py \
-       -r hadoop \
-       --jobconf "mapreduce.map.memory.mb=1200" \
-       --jobconf "mapreduce.map.java.opts=-Xmx1024m" \
-       --jobconf "mapreduce.reduce.memory.mb=1200" \
-       --jobconf "mapreduce.reduce.java.opts=-Xmx1024m" \
-       --jobconf "mapreduce.output.fileoutputformat.compress=true" \
-       --jobconf "mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.BZip2Codec" \
-       --jobconf "mapreduce.job.reduces=$NUM_REDUCES" \
-       --jobconf "mapreduce.job.maps=$NUM_MAPS" \
-       --setup 'export PYTHONPATH=$PYTHONPATH:'${JOB}'_ccmr.tar.gz#/' \
-       --no-output \
-       --cleanup NONE \
-       $S3_LOCAL_TEMP_DIR \
-       --output-dir "$OUTPUT" \
-       "hdfs:///user/hadoop/$INPUT"
+        --conf-path mrjob.conf
+        -r hadoop \
+        --jobconf "mapreduce.map.memory.mb=1200" \
+        --jobconf "mapreduce.map.java.opts=-Xmx1024m" \
+        --jobconf "mapreduce.reduce.memory.mb=1200" \
+        --jobconf "mapreduce.reduce.java.opts=-Xmx1024m" \
+        --jobconf "mapreduce.output.fileoutputformat.compress=true" \
+        --jobconf "mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.BZip2Codec" \
+        --jobconf "mapreduce.job.reduces=$NUM_REDUCES" \
+        --jobconf "mapreduce.job.maps=$NUM_MAPS" \
+        --setup 'export PYTHONPATH=$PYTHONPATH:'${JOB}'_ccmr.tar.gz#/' \
+        --no-output \
+        --cleanup NONE \
+        $S3_LOCAL_TEMP_DIR \
+        --output-dir "$OUTPUT" \
+        "hdfs:///user/hadoop/$INPUT"
