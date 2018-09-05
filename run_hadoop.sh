@@ -55,5 +55,5 @@ python $JOB.py \
         --no-output \
         --cleanup NONE \
         $S3_LOCAL_TEMP_DIR \
-        --output-dir "$OUTPUT" \
+        --output-dir "hdfs:///user/hadoop/$OUTPUT" \
         "hdfs:///user/hadoop/$INPUT"
