@@ -57,4 +57,4 @@ python $JOB.py \
 
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
-bzip2 -d *.bz2
+bzip2 -d $OUTPUT/*.bz2
