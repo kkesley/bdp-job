@@ -31,8 +31,8 @@ JOB=${JOB%.py}
 tar cvfz ${JOB}_ccmr.tar.gz *.py
 
 # number of maps resp. reduces 
-NUM_MAPS=4
-NUM_REDUCES=4
+NUM_MAPS=250
+NUM_REDUCES=10
 
 if [ -n "$S3_LOCAL_TEMP_DIR" ]; then
 	S3_LOCAL_TEMP_DIR="--s3_local_temp_dir=$S3_LOCAL_TEMP_DIR"
