@@ -5,6 +5,7 @@ from mrjob.util import log_to_stream
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 class CommonCrawlJob(MRJob):
+    DIRS = ['/usr/local/lib/python2.7/site-packages/boto3', '/usr/local/lib/python2.7/site-packages/warc', '/usr/local/lib/python2.7/site-packages/gzipstream']
     def configure_options(self):
         super(CommonCrawlJob, self).configure_options()
         self.add_passthrough_option('--s3_local_temp_dir',
