@@ -21,19 +21,19 @@ class CoOcurence(CommonCrawlJob):
     def combiner(self, key, values):
         dictionary = {}
         for value in values:
-            for key in value:
-                if key not in dictionary:
-                    dictionary[key] = 0
-                dictionary[key]+=1
+            for word, item in value.items():
+                if word not in dictionary:
+                    dictionary[word] = 0
+                dictionary[word] += item
         yield key, dictionary
     
     def reducer(self, key, values):
         dictionary = {}
         for value in values:
-            for key in value:
-                if key not in dictionary:
-                    dictionary[key] = 0
-                dictionary[key]+=1
+            for word, item in value.items():
+                if word not in dictionary:
+                    dictionary[word] = 0
+                dictionary[word] += item
         yield key, dictionary
 
         
