@@ -63,10 +63,11 @@ class CommonCrawlJob(MRJob):
                 continue
             payload = record.payload.read()
             data = json.loads(payload)
-            LOG.info('%s', data)
+            
             if data['Envelope']['WARC-Header-Metadata']['WARC-Type'] != 'response':
                 continue
-            
+            for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
+                LOG.info('%s', link)
             for key, value in self.process_record(record):
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
