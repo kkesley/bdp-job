@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
