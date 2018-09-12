@@ -1,8 +1,6 @@
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
-from mrjob.step import MRStep
-from mrjob.protocol import JSONProtocol
 import json
 import re
 regex = re.compile(
@@ -14,7 +12,7 @@ regex = re.compile(
     r'(?::\d+)?' # optional port
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
-class PageRank(CommonCrawlJob):
+class DomainRank(CommonCrawlJob):
     def process_record(self, record):
         if record['Content-Type'] != 'application/json':
             return
@@ -28,47 +26,25 @@ class PageRank(CommonCrawlJob):
             domain = urlparse(url).netloc
             links = data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']
             destination_count = {}
+            link_count = 0
             for link in links:
                 if re.match(regex, link["url"]) is None:
                     continue
                 domain_link = urlparse(link["url"]).netloc
                 if domain == domain_link:
                     continue
-                if link["url"] not in destination_count:
-                    destination_count[link["url"]] = 0
-                destination_count[link["url"]]+=1
+                if domain_link not in destination_count:
+                    destination_count[domain_link] = 0
+                destination_count[domain_link]+=1
+                link_count +=1
             for key, value in destination_count.iteritems():
-                yield key, value
+                yield key, value / link_count
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
 
-class PageCount(CommonCrawlJob):
-    def process_record(self, record):
-        if record['Content-Type'] != 'application/json':
-            return
-        payload = record.payload.read()
-        data = json.loads(payload)
-        if data['Envelope']['WARC-Header-Metadata']['WARC-Type'] != 'response':
-            return
-        count = 0
-
-        try:
-            url = data['Envelope']['WARC-Header-Metadata']['WARC-Target-URI']
-            count+=1
-            domain = urlparse(url).netloc
-            for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
-                if re.match(regex, link["url"]) is None:
-                    continue
-                domain_link = urlparse(link["url"]).netloc
-                if domain != domain_link:
-                    count+=1
-            self.increment_counter('commoncrawl', 'processed page', 1)
-            yield None, count
-        except KeyError:
-            pass
-        
-    
+    def reducer(self, key, values):
+        yield key, len(values) * sum(values)
 
 if __name__ == '__main__':
-    PageRank.run()
+    UrlRank.run()
