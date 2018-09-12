@@ -44,7 +44,7 @@ class DomainRank(CommonCrawlJob):
             pass
 
     def reducer(self, key, values):
-        yield key, len(values) * sum(values)
+        yield key, len(list(values)) * sum(values)
 
 if __name__ == '__main__':
     DomainRank.run()
