@@ -14,7 +14,7 @@ class CoOcurence(CommonCrawlJob):
             dictionary[word.lower()] += 1
 
         for word in dictionary:
-            yield word, dictionary[word]
+            yield word, dictionary
                         
         self.increment_counter('commoncrawl', 'processed_pages', 1)
     
