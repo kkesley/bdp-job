@@ -1,6 +1,8 @@
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
+from mrjob.step import MRStep
+from mrjob.protocol import JSONProtocol
 import json
 import re
 regex = re.compile(
@@ -24,12 +26,19 @@ class PageRank(CommonCrawlJob):
         try:
             url = data['Envelope']['WARC-Header-Metadata']['WARC-Target-URI']
             domain = urlparse(url).netloc
-            for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
+            links = data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']
+            destination_count = {}
+            for link in links:
                 if re.match(regex, link["url"]) is None:
                     continue
                 domain_link = urlparse(link["url"]).netloc
-                if domain != domain_link:
-                    yield link["url"], 1
+                if domain == domain_link:
+                    continue
+                if link["url"] not in destination_count:
+                    destination_count[link["url"]] = 0
+                destination_count[link["url"]]+=1
+            for key, value in destination_count.iteritems():
+                yield key, value
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
@@ -59,5 +68,7 @@ class PageCount(CommonCrawlJob):
         except KeyError:
             pass
         
+    
+
 if __name__ == '__main__':
-    PageCount.run()
+    PageRank.run()
