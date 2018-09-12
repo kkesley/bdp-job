@@ -7,7 +7,6 @@ from gzipstream import GzipStreamFile
 from tempfile import TemporaryFile
 from mrjob.job import MRJob
 from mrjob.util import log_to_stream
-import json
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 class CommonCrawlJob(MRJob):
@@ -59,15 +58,6 @@ class CommonCrawlJob(MRJob):
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
         LOG.info('Attempting MapReduce Job......')
         for _i, record in enumerate(ccfile):
-            if record['Content-Type'] != 'application/json':
-                continue
-            payload = record.payload.read()
-            data = json.loads(payload)
-            
-            if data['Envelope']['WARC-Header-Metadata']['WARC-Type'] != 'response':
-                continue
-            for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
-                LOG.info('%s', link['url'])
             for key, value in self.process_record(record):
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
