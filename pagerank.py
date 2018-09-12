@@ -4,10 +4,12 @@ import json
 
 class PageRank(CommonCrawlJob):
     def process_record(self, record):
+        print record['Content-Type']
         if record['Content-Type'] != 'application/json':
             return
         payload = record.payload.read()
         data = json.loads(payload)
+        print data
         if data['Envelope']['WARC-Header-Metadata']['WARC-Type'] != 'response':
             return
         
