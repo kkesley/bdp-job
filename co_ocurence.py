@@ -1,13 +1,16 @@
 from collections import Counter
 from ccjob import CommonCrawlJob
+import re
 from sets import Set
 
 class CoOcurence(CommonCrawlJob):
     def process_record(self, record):
         if record['Content-Type'] != 'text/plain':
             return
+        pattern = re.compile(r'[\W_]+', re.UNICODE)
         dictionary = {}
         data = record.payload.read()
+        pattern.sub('', data)
         for word, count in Counter(data.split()).iteritems():
             if word.lower() not in dictionary:
                 dictionary[word.lower()] = 0
