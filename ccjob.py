@@ -56,6 +56,7 @@ class CommonCrawlJob(MRJob):
             return
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
+        LOG.info('Attempting MapReduce Job......')
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
                 yield key, value

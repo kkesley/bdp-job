@@ -13,8 +13,8 @@ class PageRank(CommonCrawlJob):
         
         try:
             for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
-                yield link, 1     
-            self.increment_counter('commoncrawl', 'processed_server_headers', 1)
+                yield link['url'], 1     
+            self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
         
