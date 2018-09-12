@@ -9,7 +9,7 @@ class WordCount(CommonCrawlJob):
         dictionary = Set([])
         data = record.payload.read()
         for word, count in Counter(data.split()).iteritems():
-            dictionary.add(word.lower())
+            dictionary.add(word)
 
         for word in dictionary:
             yield word, 1
