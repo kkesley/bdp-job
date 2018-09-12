@@ -47,4 +47,4 @@ class DomainRank(CommonCrawlJob):
         yield key, len(values) * sum(values)
 
 if __name__ == '__main__':
-    UrlRank.run()
+    DomainRank.run()
