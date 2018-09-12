@@ -2,4 +2,3 @@ boto3
 mrjob
 warc
 https://github.com/commoncrawl/gzipstream/archive/master.zip
-urlparse
