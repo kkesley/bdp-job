@@ -39,7 +39,7 @@ class DomainRank(CommonCrawlJob):
                 destination_count[domain_link]+=1
                 link_count +=1
             for key, value in destination_count.iteritems():
-                yield key, value / link_count
+                yield key, float(value) / link_count
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
