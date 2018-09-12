@@ -33,6 +33,31 @@ class PageRank(CommonCrawlJob):
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
+
+class PageCount(CommonCrawlJob):
+    def process_record(self, record):
+        if record['Content-Type'] != 'application/json':
+            return
+        payload = record.payload.read()
+        data = json.loads(payload)
+        if data['Envelope']['WARC-Header-Metadata']['WARC-Type'] != 'response':
+            return
+        count = 0
+
+        try:
+            url = data['Envelope']['WARC-Header-Metadata']['WARC-Target-URI']
+            count+=1
+            domain = urlparse(url).netloc
+            for link in data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']:
+                if re.match(regex, link["url"]) is None:
+                    continue
+                domain_link = urlparse(link["url"]).netloc
+                if domain != domain_link:
+                    count+=1
+            self.increment_counter('commoncrawl', 'processed page', 1)
+            yield None, count
+        except KeyError:
+            pass
         
 if __name__ == '__main__':
-    PageRank.run()
+    PageCount.run()
