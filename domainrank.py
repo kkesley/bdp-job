@@ -13,7 +13,7 @@ regex = re.compile(
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 class DomainRank(CommonCrawlJob):
-    def process_record(self, record):
+    def process_record(self, record, LOG):
         if record['Content-Type'] != 'application/json':
             return
         payload = record.payload.read()
@@ -57,6 +57,7 @@ class DomainRank(CommonCrawlJob):
         node = {}
         for score in scores:
             scoreDict = json.loads(score)
+            LOG.info('%s', scoreDict)
             if scoreDict[0] == "score":
                 score_val += scoreDict[1]
             else:
