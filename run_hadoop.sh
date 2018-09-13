@@ -58,3 +58,5 @@ python $JOB.py \
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
 bzip2 -d $OUTPUT/*.bz2
+cat $OUTPUT/* > $OUTPUT/output.txt
+aws s3 cp $OUTPUT/output.txt s3://rmit-big-data-processing/s3642811/$OUTPUT/output.txt
