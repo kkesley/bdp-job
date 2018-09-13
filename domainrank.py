@@ -1,4 +1,3 @@
-from __future__ import division
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
@@ -45,7 +44,8 @@ class DomainRank(CommonCrawlJob):
             pass
 
     def reducer(self, key, values):
-        yield key, len(list(values)) * sum(values)
+        scores = list(values)
+        yield key, len(scores) * sum(scores)
 
 if __name__ == '__main__':
     DomainRank.run()
