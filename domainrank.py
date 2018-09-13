@@ -1,6 +1,7 @@
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
+from mrjob.step import MRStep
 import logging
 import json
 import re
@@ -102,7 +103,7 @@ class DomainRank(CommonCrawlJob):
         yield key, json.dumps(node)
 
     def steps(self):
-        return [DomainRank(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + [DomainRank(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1
+        return [MRStep(mapper=self.mapper)] + [MRStep(mapper=self.second_mapper)] * 1
         
 
 if __name__ == '__main__':
