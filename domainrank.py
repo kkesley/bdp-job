@@ -55,13 +55,17 @@ class DomainRank(CommonCrawlJob):
         except KeyError:
             pass
 
+    def combiner(self, key, values):
+        scores = list(values)
+        for score in scores:
+            yield key, score
+
     def reducer(self, key, values):
         scores = list(values)
         score_val = 0
         node = {}
         for score in scores:
             scoreDict = json.loads(score)
-            LOG.info('%s', scoreDict)
             if scoreDict[0] == "score":
                 score_val += scoreDict[1]
             else:
