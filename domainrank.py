@@ -24,13 +24,20 @@ class DomainRank(CommonCrawlJob):
         try:
             url = data['Envelope']['WARC-Header-Metadata']['WARC-Target-URI']
             domain = urlparse(url).netloc
+            domain = domain.replace("www.", "")
             links = data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']
+            source_score = 1
+            yield domain, ('node', {
+                "links": links,
+                "score": source_score
+            })
             destination_count = {}
             link_count = 0
             for link in links:
                 if re.match(regex, link["url"]) is None:
                     continue
                 domain_link = urlparse(link["url"]).netloc
+                domain_link = domain_link.replace("www.", "")
                 if domain == domain_link:
                     continue
                 if domain_link not in destination_count:
@@ -38,14 +45,24 @@ class DomainRank(CommonCrawlJob):
                 destination_count[domain_link]+=1
                 link_count +=1
             for key, value in destination_count.iteritems():
-                yield key, float(value) / link_count
+                yield key, ('score', float(value) / link_count * source_score)
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
 
     def reducer(self, key, values):
         scores = list(values)
-        yield key, len(scores) * sum(scores)
+        score_val = 0
+        node = {}
+        for score in scores:
+            if score[0] == "score":
+                score_val += score[1]
+            else:
+                node = score[1]
+        
+        node['score'] = score_val
+        yield key, node
+        
 
 if __name__ == '__main__':
     DomainRank.run()
