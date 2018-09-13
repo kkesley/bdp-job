@@ -103,7 +103,7 @@ class DomainRank(CommonCrawlJob):
         yield key, json.dumps(node)
 
     def sorting_mapper(self, key, line):
-        record = json.loads(value)
+        record = json.loads(line)
         source_score = record["score"]
         yield record["score"], source_score
 
@@ -113,8 +113,8 @@ class DomainRank(CommonCrawlJob):
 
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
-        [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1 + \
-        [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer)]
+        [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.map.tasks": 10, "mapred.reduce.tasks": 10})] * 1 + \
+        [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer, jobconf={"mapred.map.tasks": 5, "mapred.reduce.tasks": 5})]
         
 
 if __name__ == '__main__':
