@@ -102,12 +102,12 @@ class DomainRank(CommonCrawlJob):
         node['score'] = score_val
         yield key, json.dumps(node)
 
-    def sorting_mapper(self, key, line)
+    def sorting_mapper(self, key, line):
         record = json.loads(value)
         source_score = record["score"]
         yield record["score"], source_score
 
-    def sorting_reducer(self, key, values)
+    def sorting_reducer(self, key, values):
         for url in values:
             yield url, key
 
