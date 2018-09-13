@@ -58,8 +58,9 @@ class DomainRank(CommonCrawlJob):
 
     def second_mapper(self, _, line):
         record = line.split()
-        url = record[0]
-        node = json.loads(record[1])
+        LOG.info('%s', record)
+        url = record[0].strip()
+        node = json.loads(record[1].strip())
 
         source_score = node["score"]
         links = []
