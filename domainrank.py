@@ -27,12 +27,8 @@ class DomainRank(CommonCrawlJob):
             domain = domain.replace("www.", "")
             links = data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Links']
             source_score = 1
-            yield domain, json.dumps(['node', {
-                "links": links,
-                "score": source_score
-            }])
+            valid_links = []
             destination_count = {}
-            link_count = 0
             for link in links:
                 if re.match(regex, link["url"]) is None:
                     continue
@@ -43,9 +39,14 @@ class DomainRank(CommonCrawlJob):
                 if domain_link not in destination_count:
                     destination_count[domain_link] = 0
                 destination_count[domain_link]+=1
-                link_count +=1
+                valid_links.append(link)
+            link_count = len(valid_links)
             for key, value in destination_count.iteritems():
                 yield key, json.dumps(['score', float(value) / link_count * source_score])
+            yield domain, json.dumps(['node', {
+                "links": valid_links,
+                "score": source_score
+            }])
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
@@ -55,11 +56,11 @@ class DomainRank(CommonCrawlJob):
         score_val = 0
         node = {}
         for score in scores:
-            score = json.loads(score)
-            if score[0] == "score":
-                score_val += score[1]
+            scoreDict = json.loads(score)
+            if scoreDict[0] == "score":
+                score_val += scoreDict[1]
             else:
-                node = score[1]
+                node = scoreDict[1]
         
         node['score'] = score_val
         yield key, json.dumps(node)
