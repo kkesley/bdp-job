@@ -104,7 +104,7 @@ class DomainRank(CommonCrawlJob):
         yield key, json.dumps(node)
 
     def steps(self):
-        return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + 
+        return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
         [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1
         
 
