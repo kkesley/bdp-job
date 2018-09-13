@@ -56,27 +56,25 @@ class DomainRank(CommonCrawlJob):
         except KeyError:
             pass
 
-    def second_mapper(self, _, line):
-        record = line.split()
+    def second_mapper(self, src, value):
+        record = json.loads(value)
         LOG.info('%s', record)
-        url = record[0].strip()
-        node = json.loads(record[1].strip())
 
-        source_score = node["score"]
+        source_score = record["score"]
         links = []
-        if "links" in node:
-            links = node["links"]
+        if "links" in record:
+            links = record["links"]
 
         destination_count = {}
         for link in links:
-            if domain_link not in destination_count:
-                destination_count[domain_link] = 0
-            destination_count[domain_link]+=1
+            if link not in destination_count:
+                destination_count[link] = 0
+            destination_count[link]+=1
 
         link_count = len(links)
         for key, value in destination_count.iteritems():
             yield key, json.dumps(['score', float(value) / link_count * source_score])
-        yield domain, json.dumps(['node', {
+        yield src, json.dumps(['node', {
             "links": links,
             "score": source_score
         }])
@@ -99,6 +97,8 @@ class DomainRank(CommonCrawlJob):
                 score_val += scoreDict[1]
             else:
                 node = scoreDict[1]
+                if "links" not in node:
+                    node["links"] = []
         
         node['score'] = score_val
         yield key, json.dumps(node)
