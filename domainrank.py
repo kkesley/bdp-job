@@ -58,7 +58,6 @@ class DomainRank(CommonCrawlJob):
 
     def second_mapper(self, src, value):
         record = json.loads(value)
-        LOG.info('%s', record)
 
         source_score = record["score"]
         links = []
@@ -103,9 +102,19 @@ class DomainRank(CommonCrawlJob):
         node['score'] = score_val
         yield key, json.dumps(node)
 
+    def sorting_mapper(self, key, line)
+        record = json.loads(value)
+        source_score = record["score"]
+        yield record["score"], source_score
+
+    def sorting_reducer(self, key, values)
+        for url in values:
+            yield url, key
+
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
-        [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1
+        [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1 + \
+        [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer)]
         
 
 if __name__ == '__main__':
