@@ -43,7 +43,7 @@ class DomainRank(CommonCrawlJob):
                 if domain_link not in destination_count:
                     destination_count[domain_link] = 0
                 destination_count[domain_link]+=1
-                valid_links.append(link)
+                valid_links.append(domain_link)
             link_count = len(valid_links)
             for key, value in destination_count.iteritems():
                 yield key, json.dumps(['score', float(value) / link_count * source_score])
