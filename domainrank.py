@@ -62,7 +62,7 @@ class DomainRank(CommonCrawlJob):
                 node = score[1]
         
         node['score'] = score_val
-        yield key, node
+        yield key, json.dumps(node)
         
 
 if __name__ == '__main__':
