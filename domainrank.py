@@ -55,6 +55,30 @@ class DomainRank(CommonCrawlJob):
         except KeyError:
             pass
 
+    def second_mapper(self, _, line):
+        record = line.split()
+        url = record[0]
+        node = json.loads(record[1])
+
+        source_score = node["score"]
+        links = []
+        if "links" in node:
+            links = node["links"]
+
+        destination_count = {}
+        for link in links:
+            if domain_link not in destination_count:
+                destination_count[domain_link] = 0
+            destination_count[domain_link]+=1
+
+        link_count = len(links)
+        for key, value in destination_count.iteritems():
+            yield key, json.dumps(['score', float(value) / link_count * source_score])
+        yield domain, json.dumps(['node', {
+            "links": links,
+            "score": source_score
+        }])
+
     def combiner(self, key, values):
         scores = list(values)
         for score in scores:
@@ -63,7 +87,10 @@ class DomainRank(CommonCrawlJob):
     def reducer(self, key, values):
         scores = list(values)
         score_val = 0
-        node = {}
+        node = {
+            "score": 0,
+            "links": []
+        }
         for score in scores:
             scoreDict = json.loads(score)
             if scoreDict[0] == "score":
@@ -73,6 +100,9 @@ class DomainRank(CommonCrawlJob):
         
         node['score'] = score_val
         yield key, json.dumps(node)
+
+    def steps(self):
+        return [DomainRank(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + [DomainRank(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer)] * 1
         
 
 if __name__ == '__main__':
