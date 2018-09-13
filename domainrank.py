@@ -1,6 +1,7 @@
 from collections import Counter
 from ccjob import CommonCrawlJob
 from urlparse import urlparse
+import logging
 import json
 import re
 regex = re.compile(
@@ -12,8 +13,11 @@ regex = re.compile(
     r'(?::\d+)?' # optional port
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
+
 class DomainRank(CommonCrawlJob):
-    def process_record(self, record, LOG):
+    def process_record(self, record):
         if record['Content-Type'] != 'application/json':
             return
         payload = record.payload.read()
