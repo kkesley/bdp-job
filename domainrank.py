@@ -29,6 +29,17 @@ class DomainRank(CommonCrawlJob):
         idx = min(idx, self.maxAlphabet - 1)
         return self.alphabet[idx]
 
+    def configure_args(self):
+        super(DomainRank, self).configure_args()
+
+        self.add_passthru_arg(
+            '--iterations', dest='iterations', default=1, type=int,
+            help='number of iterations to run')
+
+        self.add_passthru_arg(
+            '--sortrank', dest='sortrank', default=True, type=bool,
+            help='sort or no sort')
+
     def process_record(self, record):
         if record['Content-Type'] != 'application/json':
             return
@@ -123,9 +134,14 @@ class DomainRank(CommonCrawlJob):
             yield key, url
 
     def steps(self):
-        return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
-        [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * 1 + \
-        [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer, jobconf={"mapred.reduce.tasks": 1})]
+        job = [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
+        [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * self.options.iterations
+
+        if self.options.sortrank is not False:
+            job = job + [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer, jobconf={"mapred.reduce.tasks": 1})]
+
+        return job
+        
         
 
 if __name__ == '__main__':
