@@ -89,8 +89,22 @@ class DomainRank(CommonCrawlJob):
 
     def combiner(self, key, values):
         scores = list(values)
+        score_val = 0
+        node = {
+            "score": 0,
+            "links": []
+        }
         for score in scores:
-            yield key, score
+            scoreDict = json.loads(score)
+            if scoreDict[0] == "score":
+                score_val += scoreDict[1]
+            else:
+                node = scoreDict[1]
+                if "links" not in node:
+                    node["links"] = []
+        
+        node['score'] = score_val
+        yield key, json.dumps(['node', node])
 
     def reducer(self, key, values):
         scores = list(values)
