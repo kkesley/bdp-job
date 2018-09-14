@@ -25,7 +25,7 @@ class DomainRank(CommonCrawlJob):
     alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
     maxAlphabet = len(alphabet)
     def get_prefix(self, num):
-        idx = max(int(math.log(max(num, 1), 10)) - 1, 0)
+        idx = max(int(math.log(max(num, 1), 10)), 0)
         idx = min(idx, self.maxAlphabet - 1)
         return self.alphabet[idx]
 
