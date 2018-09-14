@@ -34,7 +34,8 @@ done
 
 # strip .py from job name
 JOB=${JOB%.py}
-
+echo "$ITERATIONS"
+echo "$SORTRANK"
 # wrap Python files for deployment, cf. below option --setup,
 # see for details
 # http://pythonhosted.org/mrjob/guides/setup-cookbook.html#putting-your-source-tree-in-pythonpath
