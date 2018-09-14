@@ -17,6 +17,13 @@ regex = re.compile(
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
+alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
+maxAlphabet = len(alphabet)
+def get_prefix(num):
+    idx = max(int(math.log(max(num, 1))) - 1, 0)
+    idx = min(idx, maxAlphabet - 1)
+    return alphabet[idx]
+
 class DomainRank(CommonCrawlJob):
     def process_record(self, record):
         if record['Content-Type'] != 'application/json':
@@ -56,7 +63,7 @@ class DomainRank(CommonCrawlJob):
         except KeyError:
             pass
 
-    def second_mapper(self, src, value):
+    def scoring_mapper(self, src, value):
         record = json.loads(value)
 
         source_score = record["score"]
@@ -105,7 +112,7 @@ class DomainRank(CommonCrawlJob):
     def sorting_mapper(self, key, line):
         record = json.loads(line)
         source_score = record["score"]
-        yield '{:f}'.format(record["score"]), key
+        yield get_prefix(int(record["score"])) + "_" + '{:f}'.format(record["score"]), key
 
     def sorting_reducer(self, key, values):
         for url in values:
@@ -113,7 +120,7 @@ class DomainRank(CommonCrawlJob):
 
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
-        [MRStep(mapper=self.second_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * 1 + \
+        [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * 1 + \
         [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer, jobconf={"mapred.reduce.tasks": 1})]
         
 
