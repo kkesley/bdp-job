@@ -109,7 +109,7 @@ class DomainRank(CommonCrawlJob):
 
     def sorting_reducer(self, key, values):
         for url in values:
-            yield url, key
+            yield key, url
 
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
