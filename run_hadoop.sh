@@ -3,7 +3,6 @@
 JOB="$1"
 INPUT="$2"
 OUTPUT="$3"
-args=("$@")
 
 if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Usage: $0 <job> <input> <outputdir>"
@@ -20,6 +19,18 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Note: don't forget to adapt the number of maps/reduces and the memory requirements"
     exit 1
 fi
+ITERATIONS="1"
+SORTRANK="true"
+while getopts ":iterations:sortrank:" opt; do
+  case $opt in
+    iterations) ITERATIONS="$OPTARG"
+    ;;
+    sortrank) SORTRANK="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
 
 # strip .py from job name
 JOB=${JOB%.py}
@@ -55,7 +66,8 @@ python $JOB.py \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
         "hdfs:///user/hadoop/$INPUT" \
-        "${args[@]}"
+        --iterations $ITERATIONS
+        --sortrank $SORTRANK
 
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
