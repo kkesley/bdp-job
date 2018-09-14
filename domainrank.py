@@ -37,7 +37,7 @@ class DomainRank(CommonCrawlJob):
             help='number of iterations to run')
 
         self.add_passthru_arg(
-            '--sortrank', dest='sortrank', default=True, type=bool,
+            '--sortrank', dest='sortrank', default=1, type=int,
             help='sort or no sort')
 
     def process_record(self, record):
@@ -137,7 +137,7 @@ class DomainRank(CommonCrawlJob):
         job = [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
         [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * self.options.iterations
 
-        if self.options.sortrank is not False:
+        if self.options.sortrank is not 0:
             job = job + [MRStep(mapper=self.sorting_mapper, reducer=self.sorting_reducer, jobconf={"mapred.reduce.tasks": 1})]
 
         return job

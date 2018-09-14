@@ -20,7 +20,7 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     exit 1
 fi
 ITERATIONS=1
-SORTRANK=true
+SORTRANK=1
 for i in "$@"
 do
 case $i in
