@@ -1,5 +1,5 @@
 from collections import Counter
-from ccjob import CommonCrawlJob
+from domainrank import DomainRank
 from urlparse import urlparse
 from mrjob.step import MRStep
 import logging
