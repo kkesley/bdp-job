@@ -66,8 +66,8 @@ python $JOB.py \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
         "hdfs:///user/hadoop/$INPUT" \
-        --iterations $ITERATIONS
-        --sortrank $SORTRANK
+        --iterations 2
+        --sortrank false
 
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
