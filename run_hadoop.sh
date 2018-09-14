@@ -21,16 +21,21 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
 fi
 ITERATIONS=1
 SORTRANK=true
-while getopts ":iterations:sortrank:" opt; do
-  echo "$opt"
-  case $opt in
-    iterations) ITERATIONS=$OPTARG
+for i in "$@"
+do
+case $i in
+    -i=*|--iterations=*)
+    ITERATIONS="${i#*=}"
+    shift # past argument=value
     ;;
-    sortrank) SORTRANK=$OPTARG
+    -s=*|--sortrank=*)
+    SORTRANK="${i#*=}"
+    shift # past argument=value
     ;;
-    \?) echo "Invalid option -$OPTARG" >&2
+    *)
+          # unknown option
     ;;
-  esac
+esac
 done
 
 # strip .py from job name
