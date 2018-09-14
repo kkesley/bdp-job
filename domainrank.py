@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
 maxAlphabet = len(alphabet)
 def get_prefix(num):
-    idx = max(int(math.log(max(num, 1))) - 1, 0)
+    idx = max(int(math.log(max(num, 1), 10)) - 1, 0)
     idx = min(idx, maxAlphabet - 1)
     return alphabet[idx]
 
@@ -118,7 +118,7 @@ class DomainRank(CommonCrawlJob):
 
     def sorting_reducer(self, key, values):
         for url in values:
-            yield key, url
+            yield url, key.split("_")[1]
 
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
