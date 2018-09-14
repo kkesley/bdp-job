@@ -19,8 +19,8 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Note: don't forget to adapt the number of maps/reduces and the memory requirements"
     exit 1
 fi
-ITERATIONS = 1
-SORTRANK = true
+ITERATIONS=1
+SORTRANK=true
 while getopts ":iterations:sortrank:" opt; do
   case $opt in
     iterations) ITERATIONS=$OPTARG
