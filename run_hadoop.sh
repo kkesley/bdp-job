@@ -19,13 +19,13 @@ if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Note: don't forget to adapt the number of maps/reduces and the memory requirements"
     exit 1
 fi
-ITERATIONS="1"
-SORTRANK="true"
+ITERATIONS = 1
+SORTRANK = true
 while getopts ":iterations:sortrank:" opt; do
   case $opt in
-    iterations) ITERATIONS="$OPTARG"
+    iterations) ITERATIONS=$OPTARG
     ;;
-    sortrank) SORTRANK="$OPTARG"
+    sortrank) SORTRANK=$OPTARG
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -66,8 +66,8 @@ python $JOB.py \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
         "hdfs:///user/hadoop/$INPUT" \
-        --iterations 2 \
-        --sortrank false
+        --iterations $ITERATIONS \
+        --sortrank $SORTRANK
 
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
