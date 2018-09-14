@@ -3,6 +3,7 @@
 JOB="$1"
 INPUT="$2"
 OUTPUT="$3"
+args=("$@")
 
 if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Usage: $0 <job> <input> <outputdir>"
@@ -53,7 +54,8 @@ python $JOB.py \
         --cleanup NONE \
         $S3_LOCAL_TEMP_DIR \
         --output-dir "hdfs:///user/hadoop/$OUTPUT" \
-        "hdfs:///user/hadoop/$INPUT"
+        "hdfs:///user/hadoop/$INPUT" \
+        "${args[@]}"
 
 mkdir $OUTPUT
 hadoop fs -copyToLocal $OUTPUT/* $OUTPUT
