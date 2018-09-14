@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 class DomainRankWithoutSort(DomainRank):
     def steps(self):
         return [MRStep(mapper=self.mapper, combiner=self.combiner, reducer=self.reducer)] + \
-        [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * 10
+        [MRStep(mapper=self.scoring_mapper, combiner=self.combiner, reducer=self.reducer, jobconf={"mapred.reduce.tasks": 10})] * 1
         
 
 if __name__ == '__main__':
