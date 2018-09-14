@@ -19,13 +19,6 @@ regex = re.compile(
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
-alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
-maxAlphabet = len(alphabet)
-def get_prefix(num):
-    idx = max(int(math.log(max(num, 1), 10)) - 1, 0)
-    idx = min(idx, maxAlphabet - 1)
-    return alphabet[idx]
-
 class DomainRankInMapper(DomainRank):
     def process_record_init(self):
         self.urls = {}

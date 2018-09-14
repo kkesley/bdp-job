@@ -19,14 +19,16 @@ regex = re.compile(
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
-alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
-maxAlphabet = len(alphabet)
-def get_prefix(num):
-    idx = max(int(math.log(max(num, 1), 10)) - 1, 0)
-    idx = min(idx, maxAlphabet - 1)
-    return alphabet[idx]
+
 
 class DomainRank(CommonCrawlJob):
+    alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
+    maxAlphabet = len(alphabet)
+    def get_prefix(self, num):
+        idx = max(int(math.log(max(num, 1), 10)) - 1, 0)
+        idx = min(idx, self.maxAlphabet - 1)
+        return self.alphabet[idx]
+
     def process_record(self, record):
         if record['Content-Type'] != 'application/json':
             return
@@ -114,7 +116,7 @@ class DomainRank(CommonCrawlJob):
     def sorting_mapper(self, key, line):
         record = json.loads(line)
         source_score = record["score"]
-        yield get_prefix(int(record["score"])) + "_" + '{:f}'.format(record["score"]), key
+        yield self.get_prefix(int(record["score"])) + "_" + '{:f}'.format(record["score"]), key
 
     def sorting_reducer(self, key, values):
         for url in values:
