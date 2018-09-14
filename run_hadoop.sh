@@ -22,6 +22,7 @@ fi
 ITERATIONS=1
 SORTRANK=true
 while getopts ":iterations:sortrank:" opt; do
+  echo "$opt"
   case $opt in
     iterations) ITERATIONS=$OPTARG
     ;;
