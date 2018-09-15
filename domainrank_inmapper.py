@@ -7,6 +7,15 @@ import json
 import re
 import string
 import math
+import gzip
+import logging
+import boto3
+import botocore
+import warc
+from gzipstream import GzipStreamFile
+from tempfile import TemporaryFile
+from mrjob.job import MRJob
+from mrjob.util import log_to_stream
 regex = re.compile(
     r'^(?:http|ftp)s?://' # http:// or https://
     r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domain...
@@ -22,6 +31,45 @@ LOG = logging.getLogger(__name__)
 class DomainRankInMapper(DomainRank):
     def process_record_init(self):
         self.urls = {}
+
+    def mapper(self, _, line):
+        """
+        The Map of MapReduce, pulls the CommonCrawl files from S3
+        """
+        # Connect to Amazon S3 using anonymous credentials
+        boto_config = botocore.client.Config(
+            signature_version=botocore.UNSIGNED,
+            read_timeout=180,
+            retries={'max_attempts' : 20})
+        s3client = boto3.client('s3', config=boto_config)
+        # Verify bucket
+        try:
+            s3client.head_bucket(Bucket='commoncrawl')
+        except botocore.exceptions.ClientError as exception:
+            LOG.error('Failed to access bucket "commoncrawl": %s', exception)
+            return
+        # Check whether WARC/WAT/WET input exists
+        try:
+            s3client.head_object(Bucket='commoncrawl',
+                                    Key=line)
+        except botocore.client.ClientError as exception:
+            LOG.error('Input not found: %s', line)
+            return
+        # Start a connection to one of the WARC/WAT/WET files
+        LOG.info('Loading s3://commoncrawl/%s', line)
+        try:
+            temp = TemporaryFile(mode='w+b',
+                                    dir=self.options.s3_local_temp_dir)
+            s3client.download_fileobj('commoncrawl', line, temp)
+        except botocore.client.ClientError as exception:
+            LOG.error('Failed to download %s: %s', line, exception)
+            return
+        temp.seek(0)
+        ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
+        LOG.info('Attempting MapReduce Job......')
+        for _i, record in enumerate(ccfile):
+            self.process_record(record)
+            self.increment_counter('commoncrawl', 'processed_records', 1)
 
     def process_record(self, record):
         if record['Content-Type'] != 'application/json':
@@ -95,13 +143,13 @@ class DomainRankInMapper(DomainRank):
                     "score": 0
                 }
             self.urls[key].score += float(value) / link_count * source_score
-        if domain not in self.urls:
-            self.urls[domain] = {
+        if src not in self.urls:
+            self.urls[src] = {
                 "links": [],
                 "score": 0
             }
-        self.urls[domain].links = self.urls[domain].links + links
-        self.urls[domain].score = source_score
+        self.urls[src].links = self.urls[src].links + links
+        self.urls[src].score = source_score
 
     def steps(self):
         return [MRStep(mapper_init=self.process_record_init, mapper=self.mapper, mapper_final=self.process_record_final, combiner=self.combiner, reducer=self.reducer)] + \
