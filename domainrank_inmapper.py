@@ -105,14 +105,14 @@ class DomainRankInMapper(DomainRank):
                         "links": [],
                         "score": 0
                     }
-                self.urls[key].score += float(value) / link_count * source_score
+                self.urls[key]["score"] += float(value) / link_count * source_score
             if domain not in self.urls:
                 self.urls[domain] = {
                     "links": [],
                     "score": 0
                 }
-            self.urls[domain].links = self.urls[domain].links + valid_links
-            self.urls[domain].score = source_score
+            self.urls[domain]["links"] = self.urls[domain]["links"] + valid_links
+            self.urls[domain]["score"] = source_score
             self.increment_counter('commoncrawl', 'processed page', 1)
         except KeyError:
             pass
@@ -142,14 +142,14 @@ class DomainRankInMapper(DomainRank):
                     "links": [],
                     "score": 0
                 }
-            self.urls[key].score += float(value) / link_count * source_score
+            self.urls[key]["score"] += float(value) / link_count * source_score
         if src not in self.urls:
             self.urls[src] = {
                 "links": [],
                 "score": 0
             }
-        self.urls[src].links = self.urls[src].links + links
-        self.urls[src].score = source_score
+        self.urls[src]["links"] = self.urls[src]["links"] + links
+        self.urls[src]["score"] = source_score
 
     def steps(self):
         return [MRStep(mapper_init=self.process_record_init, mapper=self.mapper, mapper_final=self.process_record_final, combiner=self.combiner, reducer=self.reducer)] + \
