@@ -70,7 +70,7 @@ class DomainRankInMapper(DomainRank):
             pass
     
     def process_record_final(self):
-        for key, value in self.urls.iteritems()
+        for key, value in self.urls.iteritems():
             yield key, json.dumps(['node', value])
 
     def scoring_mapper(self, src, value):
