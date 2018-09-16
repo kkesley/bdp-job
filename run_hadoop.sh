@@ -3,6 +3,9 @@
 JOB="$1"
 INPUT="$2"
 OUTPUT="$3"
+# number of maps resp. reduces 
+NUM_MAPS=4
+NUM_REDUCES=10
 
 if [ -z "$JOB" ] || [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Usage: $0 <job> <input> <outputdir>"
@@ -32,6 +35,14 @@ case $i in
     SORTRANK="${i#*=}"
     shift # past argument=value
     ;;
+    -m=*|--maps=*)
+    NUM_MAPS="${i#*=}"
+    shift # past argument=value
+    ;;
+    -r=*|--reducers=*)
+    NUM_REDUCES="${i#*=}"
+    shift # past argument=value
+    ;;
     *)
           # unknown option
     ;;
@@ -46,9 +57,7 @@ JOB=${JOB%.py}
 # http://pythonhosted.org/mrjob/guides/setup-cookbook.html#putting-your-source-tree-in-pythonpath
 tar cvfz ${JOB}_ccmr.tar.gz *.py
 
-# number of maps resp. reduces 
-NUM_MAPS=4
-NUM_REDUCES=10
+
 
 if [ -n "$S3_LOCAL_TEMP_DIR" ]; then
 	S3_LOCAL_TEMP_DIR="--s3_local_temp_dir=$S3_LOCAL_TEMP_DIR"
