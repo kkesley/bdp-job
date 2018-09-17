@@ -68,8 +68,8 @@ fi
 python $JOB.py \
         --conf-path mrjob.conf \
         -r hadoop \
-        --jobconf "mapreduce.map.memory.mb=1024" \
-        --jobconf "mapreduce.map.java.opts=-Xmx768m" \
+        --jobconf "mapreduce.map.memory.mb=768" \
+        --jobconf "mapreduce.map.java.opts=-Xmx512m" \
         --jobconf "mapreduce.reduce.memory.mb=768" \
         --jobconf "mapreduce.reduce.java.opts=-Xmx512m" \
         --jobconf "mapreduce.output.fileoutputformat.compress=true" \
