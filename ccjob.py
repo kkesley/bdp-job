@@ -18,13 +18,13 @@ class CommonCrawlJob(MRJob):
                                     
     def process_record(self, record):
         """
-        process each record from Common Crawl file. Must be implemented
+        process each record from the input file. Must be implemented
         """
         raise NotImplementedError('process_record needs to be overriden')
 
     def mapper(self, _, line):
         """
-        The Map of MapReduce, pulls the CommonCrawl files from S3
+        The map will download the file from commoncrawl, parse the file into multiple records, and process each record
         """
         # Connect to Amazon S3 using anonymous credentials
         boto_config = botocore.client.Config(
@@ -32,21 +32,21 @@ class CommonCrawlJob(MRJob):
             read_timeout=180,
             retries={'max_attempts' : 20})
         s3client = boto3.client('s3', config=boto_config)
-        # Verify bucket
+        # Check bucket existence
         try:
             s3client.head_bucket(Bucket='commoncrawl')
         except botocore.exceptions.ClientError as exception:
             LOG.error('Failed to access bucket "commoncrawl": %s', exception)
             return
-        # Check whether WARC/WAT/WET input exists
+        # Check if the input exists
         try:
             s3client.head_object(Bucket='commoncrawl',
                                     Key=line)
         except botocore.client.ClientError as exception:
             LOG.error('Input not found: %s', line)
             return
-        # Start a connection to one of the WARC/WAT/WET files
-        LOG.info('Loading s3://commoncrawl/%s', line)
+        # Download input
+        LOG.info('Downloading s3://commoncrawl/%s', line)
         try:
             temp = TemporaryFile(mode='w+b',
                                     dir=self.options.s3_local_temp_dir)
@@ -64,19 +64,13 @@ class CommonCrawlJob(MRJob):
 
     def combiner(self, key, values):
         """
-        Combiner of MapReduce
-        Default implementation just calls the reducer which does not make
-        it necessary to implement the combiner in a derived class. Only
-        if the reducer is not "associative", the combiner needs to be
-        overwritten.
+        Basic combiner just call the reducer
         """
         for key_val in self.reducer(key, values):
             yield key_val
 
     def reducer(self, key, values):
         """
-        The Reduce of MapReduce
-        If you're trying to count stuff, this `reducer` will do. If you're
-        trying to do something more, you'll likely need to override this.
+        Basic reducer just aggregate values of a key. Implement new reducer if the value is not an integer
         """
         yield key, sum(values)
