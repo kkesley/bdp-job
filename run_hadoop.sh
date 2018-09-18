@@ -70,8 +70,8 @@ python $JOB.py \
         -r hadoop \
         --jobconf "mapreduce.map.memory.mb=768" \
         --jobconf "mapreduce.map.java.opts=-Xmx512m" \
-        --jobconf "mapreduce.reduce.memory.mb=768" \
-        --jobconf "mapreduce.reduce.java.opts=-Xmx512m" \
+        --jobconf "mapreduce.reduce.memory.mb=1024" \
+        --jobconf "mapreduce.reduce.java.opts=-Xmx768m" \
         --jobconf "mapreduce.output.fileoutputformat.compress=true" \
         --jobconf "mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.BZip2Codec" \
         --jobconf "mapreduce.job.reduces=$NUM_REDUCES" \
