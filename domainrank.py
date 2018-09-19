@@ -28,12 +28,11 @@ class DomainRank(CommonCrawlJob):
         seen = {}
         result = []
         for item in seq:
-            marker = item
             # in old Python versions:
             # if seen.has_key(marker)
             # but in new ones:
-            if marker in seen: continue
-            seen[marker] = 1
+            if item in seen: continue
+            seen[item] = 1
             result.append(item)
         return result
 
@@ -158,7 +157,7 @@ class DomainRank(CommonCrawlJob):
                 if "links" not in node: #if not exists, link must be empty array
                     node["links"] = []
                 else:
-                    node["links"].append(node_temp["links"])
+                    node["links"] += node_temp["links"]
         
         node['score'] = score_val #update the score of this link
         node['links'] = self.uniq(node["links"])

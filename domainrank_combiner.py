@@ -44,7 +44,7 @@ class DomainRankCombiner(DomainRank):
                 if "links" not in node:
                     node["links"] = []
                 else:
-                    node["links"].append(node_temp["links"])
+                    node["links"] += node_temp["links"]
         
         node['score'] = score_val #update the node score to the temporary score
         node['links'] = self.uniq(node["links"])
