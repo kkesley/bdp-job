@@ -141,11 +141,14 @@ class DomainRank(CommonCrawlJob):
             if scoreDict[0] == "score": #if the key of tuple is score, then it's a score
                 score_val += scoreDict[1] #update the temporary score from referring links
             else:
-                node = scoreDict[1] #if the key of tuple is node, it's a node, update our node
+                node_temp = scoreDict[1] #if the key of tuple is node, it's a node, update our node
                 if "links" not in node: #if not exists, link must be empty array
                     node["links"] = []
+                else:
+                    node["links"].append(node_temp["links"])
         
         node['score'] = score_val #update the score of this link
+        node['links'] = list(set(node["links"]))
         yield key, json.dumps(node) #yield the node
 
     def sorting_mapper(self, key, line):

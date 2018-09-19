@@ -40,9 +40,11 @@ class DomainRankCombiner(DomainRank):
             if scoreDict[0] == "score": #if the key of the tuple is score, update the temporary score
                 score_val += scoreDict[1]
             else:
-                node = scoreDict[1] #if the key of the tuple is node, update current node to this node
+                node_temp = scoreDict[1] #if the key of the tuple is node, update current node to this node
                 if "links" not in node:
                     node["links"] = []
+                else:
+                    node["links"].append(node_temp["links"])
         
         node['score'] = score_val #update the node score to the temporary score
         yield key, json.dumps(['node', node]) #yield the node
