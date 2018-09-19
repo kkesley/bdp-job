@@ -24,6 +24,19 @@ LOG = logging.getLogger(__name__)
 class DomainRank(CommonCrawlJob):
     alphabet = list(string.ascii_uppercase+string.ascii_lowercase)
     maxAlphabet = len(alphabet)
+    def uniq(self, seq):
+        seen = {}
+        result = []
+        for item in seq:
+            marker = item
+            # in old Python versions:
+            # if seen.has_key(marker)
+            # but in new ones:
+            if marker in seen: continue
+            seen[marker] = 1
+            result.append(item)
+        return result
+
     def get_prefix(self, num):
         """
         Get prefix of a score to sort it in the output
@@ -148,7 +161,7 @@ class DomainRank(CommonCrawlJob):
                     node["links"].append(node_temp["links"])
         
         node['score'] = score_val #update the score of this link
-        node['links'] = list(set(node["links"]))
+        node['links'] = self.uniq(node["links"])
         yield key, json.dumps(node) #yield the node
 
     def sorting_mapper(self, key, line):

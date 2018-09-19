@@ -47,6 +47,7 @@ class DomainRankCombiner(DomainRank):
                     node["links"].append(node_temp["links"])
         
         node['score'] = score_val #update the node score to the temporary score
+        node['links'] = self.uniq(node["links"])
         yield key, json.dumps(['node', node]) #yield the node
 
 if __name__ == '__main__':
