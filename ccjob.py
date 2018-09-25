@@ -7,6 +7,7 @@ from gzipstream import GzipStreamFile
 from tempfile import TemporaryFile
 from mrjob.job import MRJob
 from mrjob.util import log_to_stream
+import time
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 class CommonCrawlJob(MRJob):
@@ -26,6 +27,7 @@ class CommonCrawlJob(MRJob):
         """
         The map will download the file from commoncrawl, parse the file into multiple records, and process each record
         """
+        self.start_time = time.time()
         # Connect to Amazon S3 using anonymous credentials
         boto_config = botocore.client.Config(
             signature_version=botocore.UNSIGNED,
@@ -47,6 +49,7 @@ class CommonCrawlJob(MRJob):
             return
         # Download input
         LOG.info('Downloading s3://commoncrawl/%s', line)
+        time.strftime("Download [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
         try:
             temp = TemporaryFile(mode='w+b',
                                     dir=self.options.s3_local_temp_dir)
@@ -54,13 +57,16 @@ class CommonCrawlJob(MRJob):
         except botocore.client.ClientError as exception:
             LOG.error('Failed to download %s: %s', line, exception)
             return
+        time.strftime("Download [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
         LOG.info('Attempting MapReduce Job......')
+        time.strftime("Processing [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
+        time.strftime("Processing [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
 
     def combiner(self, key, values):
         """
@@ -73,4 +79,6 @@ class CommonCrawlJob(MRJob):
         """
         Basic reducer just aggregate values of a key. Implement new reducer if the value is not an integer
         """
+        time.strftime("Combiner [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
         yield key, sum(values)
+        time.strftime("Combiner [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time))
