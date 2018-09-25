@@ -8,6 +8,7 @@ from tempfile import TemporaryFile
 from mrjob.job import MRJob
 from mrjob.util import log_to_stream
 import time
+import sys
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 class CommonCrawlJob(MRJob):
