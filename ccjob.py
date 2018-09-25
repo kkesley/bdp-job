@@ -49,7 +49,7 @@ class CommonCrawlJob(MRJob):
             LOG.error('Input not found: %s', line)
             return
         # Download input
-        sys.stderr.write('Downloading s3://commoncrawl/%s', line)
+        sys.stderr.write("Downloading s3://commoncrawl/{}".format(line))
         sys.stderr.write(time.strftime("Download [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
         try:
             temp = TemporaryFile(mode='w+b',
@@ -61,7 +61,7 @@ class CommonCrawlJob(MRJob):
         sys.stderr.write(time.strftime("Download [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
-        sys.stderr.write(LOG.info('Attempting MapReduce Job......'))
+        sys.stderr.write('Attempting MapReduce Job......')
         sys.stderr.write(time.strftime("Processing [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
