@@ -49,8 +49,8 @@ class CommonCrawlJob(MRJob):
             LOG.error('Input not found: %s', line)
             return
         # Download input
-        sys.stderr.write("Downloading s3://commoncrawl/{}".format(line))
-        sys.stderr.write(time.strftime("Download [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write("Downloading s3://commoncrawl/{}\n".format(line))
+        sys.stderr.write(time.strftime("Download [START]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         try:
             temp = TemporaryFile(mode='w+b',
                                     dir=self.options.s3_local_temp_dir)
@@ -58,16 +58,16 @@ class CommonCrawlJob(MRJob):
         except botocore.client.ClientError as exception:
             LOG.error('Failed to download %s: %s', line, exception)
             return
-        sys.stderr.write(time.strftime("Download [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write(time.strftime("Download [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
         sys.stderr.write('Attempting MapReduce Job......')
-        sys.stderr.write(time.strftime("Processing [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write(time.strftime("Processing [START]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
                 yield key, value
             self.increment_counter('commoncrawl', 'processed_records', 1)
-        sys.stderr.write(time.strftime("Processing [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write(time.strftime("Processing [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
 
     def combiner(self, key, values):
         """
@@ -80,6 +80,6 @@ class CommonCrawlJob(MRJob):
         """
         Basic reducer just aggregate values of a key. Implement new reducer if the value is not an integer
         """
-        sys.stderr.write(time.strftime("Combiner [START]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write(time.strftime("Combiner [START]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         yield key, sum(values)
-        sys.stderr.write(time.strftime("Combiner [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss", time.gmtime(time.time() - self.start_time)))
+        sys.stderr.write(time.strftime("Combiner [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
