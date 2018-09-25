@@ -61,7 +61,7 @@ class CommonCrawlJob(MRJob):
         sys.stderr.write(time.strftime("Download [FINISHED]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         temp.seek(0)
         ccfile = warc.WARCFile(fileobj=(GzipStreamFile(temp)))
-        sys.stderr.write('Attempting MapReduce Job......')
+        sys.stderr.write('Attempting MapReduce Job......\n')
         sys.stderr.write(time.strftime("Processing [START]. Distance from initial time: %Hh:%Mm:%Ss\n", time.gmtime(time.time() - self.start_time)))
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
