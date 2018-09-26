@@ -114,6 +114,8 @@ class DomainRank(CommonCrawlJob):
         links = []
         if "links" in record:
             links = record["links"] # get all referral links
+        LOG.info(links)
+        LOG.info(source_score)
 
         destination_count = {}
         for link in links:
@@ -144,6 +146,7 @@ class DomainRank(CommonCrawlJob):
         #initialize values
         scores = list(values)
         score_val = 0
+        score_found = False
         node = {
             "score": 0,
             "links": []
@@ -152,14 +155,18 @@ class DomainRank(CommonCrawlJob):
             scoreDict = json.loads(score)
             if scoreDict[0] == "score": #if the key of tuple is score, then it's a score
                 score_val += scoreDict[1] #update the temporary score from referring links
+                score_found = True
             else:
                 node_temp = scoreDict[1] #if the key of tuple is node, it's a node, update our node
                 if "links" not in node: #if not exists, link must be empty array
                     node["links"] = []
                 else:
                     node["links"] += node_temp["links"]
+                if "score" in node_temp:
+                    node["score"] = node_temp['score']
         
-        node['score'] = score_val #update the score of this link
+        if score_found:
+            node['score'] = score_val #update the score of this link
         node['links'] = self.uniq(node["links"])
         yield key, json.dumps(node) #yield the node
 
