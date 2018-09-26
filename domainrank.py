@@ -114,8 +114,6 @@ class DomainRank(CommonCrawlJob):
         links = []
         if "links" in record:
             links = record["links"] # get all referral links
-        LOG.info(links)
-        LOG.info(source_score)
 
         destination_count = {}
         for link in links:
